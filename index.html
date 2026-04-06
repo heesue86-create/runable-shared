@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runable Shared — 공유 자료 허브</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Pretendard', -apple-system, 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      color: #1a1a1a;
+      line-height: 1.6;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      color: #fff;
+      padding: 48px 40px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    }
+    .header .tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 24px 0 14px 4px;
+    }
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      border: 1px solid transparent;
+    }
+    .card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-color: #e2e8f0;
+    }
+    .card .emoji {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .card .body {
+      flex: 1;
+    }
+    .card .title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .card .desc {
+      font-size: 13px;
+      color: #64748b;
+    }
+    .card .meta {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .card .arrow {
+      font-size: 18px;
+      color: #cbd5e1;
+      flex-shrink: 0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="tag">RUNABLE SHARED</div>
+      <h1>러너블 공유 자료 허브</h1>
+      <p>C&amp;C사업팀 마케팅/브랜딩 레퍼런스 · 브리핑 · 분석 문서</p>
+    </div>
+
+    <div class="section-title">마케팅 레퍼런스</div>
+    <div class="card-list">
+      <a href="./2026-instagram-algorithm.html" class="card">
+        <div class="emoji">📱</div>
+        <div class="body">
+          <div class="title">2026 인스타그램 알고리즘 브리핑</div>
+          <div class="desc">피드 vs 릴스 노출 전략 · 러너블 데이터 크로스체크 · 이미지 템플릿 제안</div>
+          <div class="meta">2026.04.06 업데이트</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+    </div>
+
+    <div class="footer">
+      Runable C&amp;C Business Team · Last updated 2026.04.06
+    </div>
+  </div>
+</body>
+</html>

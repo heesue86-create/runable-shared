@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 인스타그램 알고리즘 브리핑 — 피드 vs 릴스 노출 전략</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Pretendard', -apple-system, 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      color: #1a1a1a;
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      color: #fff;
+      padding: 48px 40px 36px;
+    }
+    .header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .header p {
+      font-size: 14px;
+      opacity: 0.85;
+    }
+    .content { padding: 40px; }
+
+    /* TOC */
+    .toc {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .toc .toc-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #833ab4;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .toc-part {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-top: 8px;
+    }
+    .toc-items {
+      font-size: 13px;
+      color: #666;
+      margin-left: 16px;
+    }
+
+    /* 파트 구분 */
+    .part-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 44px 0 8px;
+    }
+    .part-divider .part-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      background: #833ab4;
+      padding: 4px 12px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      white-space: nowrap;
+    }
+    .part-divider .part-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, #833ab4, transparent);
+    }
+
+    /* 핵심 변화 카드 */
+    .key-change {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      border-radius: 0 12px 12px 0;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .key-change .label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #e65100;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .key-change p {
+      font-size: 18px;
+      font-weight: 700;
+      color: #bf360c;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin: 36px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #833ab4;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* 랭킹 시그널 */
+    .ranking { margin-bottom: 28px; }
+    .ranking-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .ranking-item:last-child { border-bottom: none; }
+    .rank-badge {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+    }
+    .rank-1 { background: #833ab4; }
+    .rank-2 { background: #fd1d1d; }
+    .rank-3 { background: #fcb045; color: #1a1a1a; }
+    .ranking-item strong { font-size: 15px; }
+    .ranking-item .desc {
+      font-size: 13.5px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* 비교 테이블 */
+    .compare-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e8e8e8;
+      margin: 16px 0 28px;
+      font-size: 14px;
+    }
+    .compare-table th {
+      background: #f5f0ff;
+      color: #5b21b6;
+      font-weight: 700;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    .compare-table td {
+      padding: 12px 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .compare-table tr:nth-child(even) td { background: #fafafa; }
+
+    /* 체류시간 */
+    .stat-row {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .stat-card {
+      flex: 1;
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #833ab4;
+    }
+    .stat-card .unit {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+    .stat-card .label2 {
+      font-size: 13px;
+      color: #555;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    /* 패널티 */
+    .penalty {
+      background: #fef2f2;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 16px 0 28px;
+    }
+    .penalty li {
+      list-style: none;
+      padding: 6px 0;
+      font-size: 14px;
+      color: #991b1b;
+    }
+    .penalty li::before {
+      content: "\26A0\FE0F ";
+    }
+
+    /* 액션 아이템 */
+    .actions {
+      background: linear-gradient(135deg, #f5f0ff, #fef3ff);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 16px;
+    }
+    .actions h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #5b21b6;
+      margin-bottom: 14px;
+    }
+    .action-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 14px;
+    }
+    .action-item .icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      background: #833ab4;
+      color: #fff;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .action-item strong { color: #1a1a1a; }
+    .action-item .sub {
+      font-size: 13px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    /* 구조 다이어그램 */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .flow-step {
+      background: #f5f0ff;
+      border: 2px solid #d8b4fe;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #5b21b6;
+    }
+    .flow-arrow {
+      font-size: 18px;
+      color: #833ab4;
+    }
+
+    /* VS 비교 카드 */
+    .vs-grid {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .vs-card {
+      flex: 1;
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+    }
+    .vs-card.feed { background: #eff6ff; border: 2px solid #bfdbfe; }
+    .vs-card.reels { background: #fef3ff; border: 2px solid #e8b4fe; }
+    .vs-card .vs-title {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .vs-card.feed .vs-title { color: #1d4ed8; }
+    .vs-card.reels .vs-title { color: #833ab4; }
+    .vs-card ul {
+      list-style: none;
+      font-size: 13px;
+      color: #444;
+    }
+    .vs-card li { padding: 3px 0; }
+    .vs-card li::before { content: "  "; }
+    .vs-card.feed li::before { content: "\25A0 "; color: #3b82f6; }
+    .vs-card.reels li::before { content: "\25A0 "; color: #a855f7; }
+    .vs-badge {
+      position: absolute;
+      top: -10px;
+      right: 16px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 10px;
+      color: #fff;
+    }
+    .vs-card.feed .vs-badge { background: #3b82f6; }
+    .vs-card.reels .vs-badge { background: #a855f7; }
+
+    /* 벤치마크 바 */
+    .benchmark { margin: 20px 0; }
+    .bench-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .bench-label {
+      width: 80px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .bench-bar-bg {
+      flex: 1;
+      height: 28px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bench-bar {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .bench-bar.reels-bar { background: linear-gradient(90deg, #833ab4, #a855f7); }
+    .bench-bar.carousel-bar { background: linear-gradient(90deg, #f59e0b, #fbbf24); color: #1a1a1a; }
+    .bench-bar.feed-bar { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .bench-bar.image-bar { background: #94a3b8; }
+
+    /* Mosseri 인용 */
+    .quote-box {
+      background: #f8f9fa;
+      border-left: 4px solid #833ab4;
+      border-radius: 0 12px 12px 0;
+      padding: 18px 24px;
+      margin: 20px 0;
+      font-size: 15px;
+      font-style: italic;
+      color: #333;
+    }
+    .quote-box .attribution {
+      font-size: 12px;
+      font-style: normal;
+      color: #888;
+      margin-top: 8px;
+    }
+
+    /* 적용 시나리오 */
+    .scenario-grid {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .scenario-card {
+      flex: 1;
+      border-radius: 12px;
+      padding: 18px;
+      font-size: 13px;
+    }
+    .scenario-card.do-reels { background: #fef3ff; border: 1px solid #e8b4fe; }
+    .scenario-card.do-feed { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .scenario-card h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .scenario-card.do-reels h4 { color: #833ab4; }
+    .scenario-card.do-feed h4 { color: #1d4ed8; }
+    .scenario-card li {
+      list-style: none;
+      padding: 2px 0;
+      color: #555;
+    }
+
+    .footer {
+      padding: 24px 40px;
+      border-top: 1px solid #f0f0f0;
+      font-size: 12px;
+      color: #999;
+    }
+    .footer a { color: #833ab4; text-decoration: none; }
+    .sources {
+      margin-top: 8px;
+      padding-top: 12px;
+    }
+    .sources a {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      text-decoration: none;
+      padding: 2px 0;
+    }
+    .sources a:hover { color: #833ab4; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">Algorithm Update 2026</div>
+      <h1>인스타그램 알고리즘 브리핑<br>피드 vs 릴스 노출 전략</h1>
+      <p>2026.04.06 | C&amp;C사업팀 마케팅 레퍼런스</p>
+    </div>
+
+    <div class="content">
+
+      <!-- TOC -->
+      <div class="toc">
+        <div class="toc-title">Contents</div>
+        <div class="toc-part">Part A — 릴스 알고리즘 심화</div>
+        <div class="toc-items">1. 랭킹 시그널 &nbsp; 2. 저장의 의미 변화 &nbsp; 3. 체류시간 가이드 &nbsp; 4. 신규 패널티</div>
+        <div class="toc-part">Part B — 피드 vs 릴스 노출 비교</div>
+        <div class="toc-items">5. 알고리즘 구조 차이 &nbsp; 6. 성과 벤치마크 &nbsp; 7. 권장 콘텐츠 믹스</div>
+        <div class="toc-part">Part C — 실무 적용</div>
+        <div class="toc-items">8. 언제 릴스 vs 피드 &nbsp; 9. 액션 체크리스트 &nbsp; 10. 자가 점검</div>
+        <div class="toc-part">Part D — 러너블 데이터 크로스체크</div>
+        <div class="toc-items">11. 포맷별 실적 &nbsp; 12. 카테고리 진단 &nbsp; 13. 알고리즘 매핑 &nbsp; 14. 주제 제안 &nbsp; 15. 주간 운영안</div>
+        <div class="toc-part">Part E — 이미지 템플릿 & 피드 디자인</div>
+        <div class="toc-items">16. 그리드 변화 &nbsp; 17. 잘나가는 레이아웃 &nbsp; 18. 벤치마크 &nbsp; 19. 템플릿 제안</div>
+      </div>
+
+      <div class="key-change">
+        <div class="label">Core Shift</div>
+        <p>"도달 &ne; 성과" &mdash; 도달은 검증의 시작점일 뿐, 전환까지의 설계가 핵심</p>
+      </div>
+
+      <!-- ===== PART A ===== -->
+      <div class="part-divider">
+        <span class="part-label">Part A</span>
+        <span class="part-line"></span>
+      </div>
+      <p style="font-size:15px; font-weight:700; margin:8px 0 0;">릴스 알고리즘 심화</p>
+
+      <!-- 1 -->
+      <h2><span class="num">1</span> 랭킹 시그널 우선순위</h2>
+      <p style="font-size:13.5px; color:#666; margin-bottom:8px;">Adam Mosseri(인스타그램 대표) 공식 확인 기준</p>
+      <div class="ranking">
+        <div class="ranking-item">
+          <div class="rank-badge rank-1">1</div>
+          <div>
+            <strong>시청 지속시간 (Watch Time)</strong>
+            <div class="desc">가장 강력한 신호. 첫 3초 통과 여부가 노출 확장의 관건. 완주율(영상 대비 시청 비율)이 절대 시청시간보다 중요.</div>
+          </div>
+        </div>
+        <div class="ranking-item">
+          <div class="rank-badge rank-2">2</div>
+          <div>
+            <strong>공유 &middot; DM 전송 (Sends per Reach)</strong>
+            <div class="desc">공개 댓글보다 비공개 전파가 더 강한 시그널. Gen Z 중심으로 브랜드 상호작용이 DM으로 이동 중.</div>
+          </div>
+        </div>
+        <div class="ranking-item">
+          <div class="rank-badge rank-3">3</div>
+          <div>
+            <strong>저장 (Saves)</strong>
+            <div class="desc">좋아요 대비 약 <strong>3배 가중치</strong>. 단, 의미가 변화 &mdash; 아래 참조.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <h2><span class="num">2</span> "저장"의 의미가 바뀌었다</h2>
+      <table class="compare-table">
+        <tr>
+          <th style="width:90px;"></th>
+          <th>과거</th>
+          <th>2026</th>
+        </tr>
+        <tr>
+          <td><strong>저장 의미</strong></td>
+          <td>정보 가치가 높다 = 즉각적 관심</td>
+          <td>나중에 판단할 때 참고 = <strong>비교 검토 북마크</strong></td>
+        </tr>
+        <tr>
+          <td><strong>전환 연결</strong></td>
+          <td>저장 &rarr; 관심 &rarr; 구매</td>
+          <td>저장 &rarr; 비교 &rarr; <strong>브랜드 기억 시에만</strong> 전환</td>
+        </tr>
+        <tr>
+          <td><strong>시사점</strong></td>
+          <td>저장 유도 = 성과</td>
+          <td>저장 + <strong>브랜드 각인</strong>이 함께 필요</td>
+        </tr>
+      </table>
+
+      <!-- 3 -->
+      <h2><span class="num">3</span> 체류시간 실무 가이드</h2>
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="value">7~30<span style="font-size:16px;">초</span></div>
+          <div class="unit">신규 도달용</div>
+          <div class="label2">높은 완주율 &rarr; 탐색탭 노출</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">30~90<span style="font-size:16px;">초</span></div>
+          <div class="unit">팔로워 스토리텔링</div>
+          <div class="label2">깊은 몰입 &rarr; 관계 강화</div>
+        </div>
+      </div>
+      <p style="font-size:14px; color:#555; margin:8px 0 4px;"><strong>권장 릴스 구조 (20~40초)</strong></p>
+      <div class="flow">
+        <div class="flow-step">문제 제기</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">판단 기준 제시</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">선택지 정리</div>
+      </div>
+      <p style="font-size:13px; color:#888; text-align:center;">5~7초 숏클립보다 기준 제시형 20~40초가 알고리즘에 유리</p>
+
+      <!-- 4 -->
+      <h2><span class="num">4</span> 2026 신규 패널티</h2>
+      <div class="penalty">
+        <ul>
+          <li><strong>TikTok 워터마크 감지</strong> &mdash; 자동 인식 후 도달 제한</li>
+          <li><strong>Originality Score 도입</strong> &mdash; 재활용/리포스트 콘텐츠 도달 대폭 감소</li>
+          <li><strong>AI 생성 콘텐츠 후순위</strong> &mdash; "raw, real human content" 우선 (Mosseri 2025.12.31 발표)</li>
+        </ul>
+      </div>
+
+      <!-- ===== PART B ===== -->
+      <div class="part-divider">
+        <span class="part-label">Part B</span>
+        <span class="part-line"></span>
+      </div>
+      <p style="font-size:15px; font-weight:700; margin:8px 0 0;">피드 vs 릴스 노출 비교</p>
+
+      <!-- 5 -->
+      <h2><span class="num">5</span> 알고리즘 구조 차이</h2>
+      <p style="font-size:13.5px; color:#666; margin-bottom:12px;">인스타그램은 피드, 릴스, 스토리, 탐색탭에 각각 다른 AI 시스템을 사용합니다.</p>
+      <div class="vs-grid">
+        <div class="vs-card feed">
+          <span class="vs-badge">Feed</span>
+          <div class="vs-title">피드 알고리즘</div>
+          <ul>
+            <li><strong>팔로워 중심</strong> 노출</li>
+            <li>과거 상호작용 빈도 기반</li>
+            <li>관계 친밀도가 핵심 시그널</li>
+            <li>좋아요 &middot; 댓글 &middot; 저장 &middot; 공유</li>
+            <li>비팔로워 도달 <strong>제한적</strong></li>
+          </ul>
+        </div>
+        <div class="vs-card reels">
+          <span class="vs-badge">Reels</span>
+          <div class="vs-title">릴스 알고리즘</div>
+          <ul>
+            <li><strong>비팔로워에게 적극 추천</strong></li>
+            <li>콘텐츠별 성능 테스트 후 확산</li>
+            <li>DM 공유 &middot; 시청시간이 핵심</li>
+            <li>인게이지먼트 속도(velocity)</li>
+            <li>도달 배수 <strong>팔로워의 ~4배</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <table class="compare-table">
+        <tr>
+          <th></th>
+          <th>피드</th>
+          <th>릴스</th>
+        </tr>
+        <tr>
+          <td><strong>노출 대상</strong></td>
+          <td>팔로워 중심</td>
+          <td>비팔로워에게 추천</td>
+        </tr>
+        <tr>
+          <td><strong>도달 배수</strong></td>
+          <td>팔로워의 ~0.2배</td>
+          <td>팔로워의 <strong>~4배</strong></td>
+        </tr>
+        <tr>
+          <td><strong>핵심 시그널</strong></td>
+          <td>관계 친밀도, 상호작용 이력</td>
+          <td>DM 공유, 시청 지속시간</td>
+        </tr>
+        <tr>
+          <td><strong>역할</strong></td>
+          <td>기존 팔로워 관계 강화 &middot; 전환</td>
+          <td>신규 오디언스 확보</td>
+        </tr>
+        <tr>
+          <td><strong>해시태그</strong></td>
+          <td colspan="2" style="text-align:center;">최대 5개 제한 &mdash; 캡션 키워드 최적화가 더 중요</td>
+        </tr>
+      </table>
+
+      <!-- 6 -->
+      <h2><span class="num">6</span> 2026 성과 벤치마크</h2>
+
+      <div class="benchmark">
+        <p style="font-size:13px; color:#888; margin-bottom:12px;">인게이지먼트율 비교 (2026 Social Insider 기준)</p>
+        <div class="bench-row">
+          <div class="bench-label">릴스</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar reels-bar" style="width:85%;">4.2 ~ 7.1%</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label">캐러셀</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar carousel-bar" style="width:65%;">3.5 ~ 5.8%</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label">정적 이미지</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar image-bar" style="width:38%;">2.1 ~ 3.2%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="value" style="color:#fd1d1d;">-17%</div>
+          <div class="unit">정적 이미지 인게이지먼트</div>
+          <div class="label2">YoY 감소 &mdash; 계속 하락 추세</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" style="color:#16a34a;">+40~60%</div>
+          <div class="unit">오리지널 콘텐츠 노출</div>
+          <div class="label2">리포스트 대비 추가 배포량</div>
+        </div>
+      </div>
+
+      <p style="font-size:13px; color:#666; margin-top:16px;"><strong>Buffer 400만 게시물 분석 결과:</strong> 인게이지먼트 기준으로는 <strong>캐러셀이 1위</strong>, 도달 기준으로는 <strong>릴스가 압도적</strong>. 릴스가 무조건 우위가 아닌, 목적에 따라 다름.</p>
+
+      <!-- 7 -->
+      <h2><span class="num">7</span> 권장 콘텐츠 믹스</h2>
+      <div class="quote-box">
+        "주 2회 릴스 + 주 3~5회 피드 포스트. 볼륨보다 일관성이 더 중요하다."
+        <div class="attribution">&mdash; Adam Mosseri, Instagram Head (공식 발언)</div>
+      </div>
+      <table class="compare-table">
+        <tr>
+          <th>포맷</th>
+          <th>주간 빈도</th>
+          <th>목적</th>
+        </tr>
+        <tr>
+          <td><strong>릴스</strong></td>
+          <td>주 2회</td>
+          <td>신규 도달 &middot; 브랜드 인지 확대</td>
+        </tr>
+        <tr>
+          <td><strong>캐러셀</strong></td>
+          <td>주 2~3회</td>
+          <td>정보 전달 &middot; 저장 유도 &middot; 전환</td>
+        </tr>
+        <tr>
+          <td><strong>단일 이미지</strong></td>
+          <td>주 1~2회</td>
+          <td>브랜딩 &middot; 비주얼 일관성 유지</td>
+        </tr>
+        <tr>
+          <td><strong>스토리</strong></td>
+          <td>매일</td>
+          <td>팔로워 관계 유지 &middot; CTA 연결</td>
+        </tr>
+      </table>
+
+      <!-- ===== PART C ===== -->
+      <div class="part-divider">
+        <span class="part-label">Part C</span>
+        <span class="part-line"></span>
+      </div>
+      <p style="font-size:15px; font-weight:700; margin:8px 0 0;">실무 적용</p>
+
+      <!-- 8 -->
+      <h2><span class="num">8</span> 언제 릴스, 언제 피드?</h2>
+      <div class="scenario-grid">
+        <div class="scenario-card do-reels">
+          <h4>릴스 집중</h4>
+          <ul>
+            <li>신규 팔로워 확보 목표</li>
+            <li>대회 홍보, 브랜드 인지</li>
+            <li>DM 공유 유도 가능한 콘텐츠</li>
+            <li>러닝 팁, 놀라운 장면, 비하인드</li>
+          </ul>
+        </div>
+        <div class="scenario-card do-feed">
+          <h4>피드(캐러셀) 집중</h4>
+          <ul>
+            <li>기존 팔로워 전환 목표</li>
+            <li>스페셜팩 구매, 대회 신청 유도</li>
+            <li>정보량 많은 콘텐츠</li>
+            <li>코스 안내, 비교 가이드 (최대 20장)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <h2><span class="num">9</span> 액션 체크리스트</h2>
+      <div class="actions">
+        <h3>지금 바꿔야 할 5가지</h3>
+        <div class="action-item">
+          <div class="icon">A</div>
+          <div>
+            <strong>저장 유도 &rarr; 판단 기준 제시형으로 전환</strong>
+            <div class="sub">"저장해두세요" 대신 "이 기준으로 골라보세요" &mdash; 브랜드가 기억되는 콘텐츠</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">B</div>
+          <div>
+            <strong>DM 공유 유도 설계</strong>
+            <div class="sub">"친구 태그" 대신 "이거 보내줘" 구조. 비공개 전파가 알고리즘 최상위 시그널</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">C</div>
+          <div>
+            <strong>릴스 길이 재설계</strong>
+            <div class="sub">신규 도달 = 15~30초 완주형 / 팔로워 = 40~60초 스토리텔링. 오리지널 콘텐츠 필수</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">D</div>
+          <div>
+            <strong>캐러셀 비중 확대</strong>
+            <div class="sub">인게이지먼트 1위 포맷. 전환 목적 콘텐츠(상품, 코스 안내)는 캐러셀로 전환</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">E</div>
+          <div>
+            <strong>해시태그 &rarr; 캡션 키워드로 전환</strong>
+            <div class="sub">해시태그 5개 제한. AI가 캡션 &middot; 프로필 키워드로 콘텐츠 분류 &mdash; 검색 최적화 필수</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <h2><span class="num">10</span> 자가 점검</h2>
+      <div style="padding:16px 20px; background:#f8f9fa; border-radius:10px; font-size:13.5px; color:#666;">
+        <strong style="color:#1a1a1a;">우리 계정 점검 5문항</strong><br><br>
+        1. 우리 계정은 "어떤 기준으로 선택하라"고 말하고 있는가?<br>
+        2. 노출 후 사용자의 망설임을 줄이는 설계가 있는가?<br>
+        3. 3개 콘텐츠만 봐도 브랜드 관점이 인식되는가?<br>
+        4. 릴스와 피드의 <strong>역할 구분</strong>이 명확한가? (도달 vs 전환)<br>
+        5. 콘텐츠가 DM으로 공유될 만한 <strong>"보내줘" 구조</strong>인가?
+      </div>
+
+      <!-- ===== PART D ===== -->
+      <div class="part-divider">
+        <span class="part-label">Part D</span>
+        <span class="part-line"></span>
+      </div>
+      <p style="font-size:15px; font-weight:700; margin:8px 0 0;">러너블 데이터 크로스체크</p>
+      <p style="font-size:13px; color:#888; margin:4px 0 0;">@runable.original 25.12~26.3월 | 99건 게시물 분석</p>
+
+      <!-- 11. 포맷별 실적 -->
+      <h2><span class="num">11</span> 포맷별 실적 비교</h2>
+      <p style="font-size:13px; color:#666; margin-bottom:12px;">실제 데이터가 알고리즘 이론을 그대로 증명합니다.</p>
+
+      <div class="benchmark">
+        <p style="font-size:12px; color:#888; margin-bottom:8px;">평균 도달수 (Reach)</p>
+        <div class="bench-row">
+          <div class="bench-label">릴스 (10건)</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar reels-bar" style="width:100%;">12,908</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label">이미지 (4건)</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar feed-bar" style="width:60%;">7,791</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label">슬라이드 (85건)</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar carousel-bar" style="width:53%;">6,887</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="key-change" style="margin-top:20px;">
+        <div class="label">Gap</div>
+        <p>릴스가 슬라이드의 1.87배 도달인데, 전체 콘텐츠의 <strong>90%가 슬라이드</strong></p>
+      </div>
+
+      <table class="compare-table">
+        <tr>
+          <th>포맷</th>
+          <th>비중</th>
+          <th>평균 도달</th>
+          <th>평균 공유</th>
+          <th>평균 저장</th>
+          <th>평균 팔로우</th>
+        </tr>
+        <tr>
+          <td><strong>릴스</strong></td>
+          <td>10% (10건)</td>
+          <td style="color:#833ab4; font-weight:700;">12,908</td>
+          <td>40.9</td>
+          <td>19.7</td>
+          <td style="color:#833ab4; font-weight:700;">6.0</td>
+        </tr>
+        <tr>
+          <td><strong>슬라이드</strong></td>
+          <td>86% (85건)</td>
+          <td>6,887</td>
+          <td>38.2</td>
+          <td>23.1</td>
+          <td>3.2</td>
+        </tr>
+        <tr>
+          <td><strong>이미지</strong></td>
+          <td>4% (4건)</td>
+          <td>7,791</td>
+          <td>24.5</td>
+          <td>15.2</td>
+          <td>5.8</td>
+        </tr>
+      </table>
+
+      <!-- 12. 카테고리 진단 -->
+      <h2><span class="num">12</span> 카테고리별 진단</h2>
+
+      <div class="benchmark">
+        <p style="font-size:12px; color:#888; margin-bottom:8px;">카테고리별 평균 도달수</p>
+        <div class="bench-row">
+          <div class="bench-label" style="width:100px;">커뮤니티 밈</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar reels-bar" style="width:100%;">12,295</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label" style="width:100px;">파트너십</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar" style="width:68%; background:linear-gradient(90deg,#10b981,#34d399);">8,312</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label" style="width:100px;">자사 대회</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar feed-bar" style="width:61%;">7,464</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label" style="width:100px;">마라톤 뉴스</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar carousel-bar" style="width:61%;">7,447</div>
+          </div>
+        </div>
+        <div class="bench-row">
+          <div class="bench-label" style="width:100px;">러닝 팁</div>
+          <div class="bench-bar-bg">
+            <div class="bench-bar image-bar" style="width:42%;">5,224</div>
+          </div>
+        </div>
+      </div>
+
+      <table class="compare-table">
+        <tr>
+          <th>카테고리</th>
+          <th>건수</th>
+          <th>도달</th>
+          <th>공유</th>
+          <th>저장</th>
+          <th>팔로우</th>
+          <th>진단</th>
+        </tr>
+        <tr>
+          <td><strong>커뮤니티 밈</strong></td>
+          <td>11</td>
+          <td style="color:#833ab4; font-weight:700;">12,295</td>
+          <td style="color:#833ab4; font-weight:700;">60.2</td>
+          <td>19.2</td>
+          <td>3.0</td>
+          <td style="color:#16a34a; font-weight:600;">도달+공유 최강</td>
+        </tr>
+        <tr>
+          <td><strong>파트너십</strong></td>
+          <td>9</td>
+          <td>8,312</td>
+          <td style="color:#833ab4; font-weight:700;">68.2</td>
+          <td>34.9</td>
+          <td style="color:#833ab4; font-weight:700;">5.8</td>
+          <td style="color:#16a34a; font-weight:600;">공유+팔로우 효자</td>
+        </tr>
+        <tr>
+          <td><strong>자사 대회</strong></td>
+          <td>39</td>
+          <td>7,464</td>
+          <td>40.7</td>
+          <td>14.7</td>
+          <td>5.4</td>
+          <td>세일즈 핵심 (비중 과다)</td>
+        </tr>
+        <tr>
+          <td><strong>마라톤 뉴스</strong></td>
+          <td>16</td>
+          <td>7,447</td>
+          <td>22.1</td>
+          <td>10.4</td>
+          <td>1.9</td>
+          <td>체류시간용 (저인게이지)</td>
+        </tr>
+        <tr>
+          <td><strong>러닝 팁</strong></td>
+          <td>24</td>
+          <td style="color:#dc2626;">5,224</td>
+          <td style="color:#dc2626;">22.3</td>
+          <td style="color:#833ab4; font-weight:700;">39.8</td>
+          <td style="color:#dc2626;">1.2</td>
+          <td style="color:#dc2626; font-weight:600;">저장만 높고 죽은 콘텐츠</td>
+        </tr>
+      </table>
+
+      <!-- 13. 알고리즘 매핑 -->
+      <h2><span class="num">13</span> 알고리즘 시그널 × 실제 데이터 매핑</h2>
+      <p style="font-size:13px; color:#666; margin-bottom:12px;">2026 알고리즘이 보상하는 시그널과 러너블 데이터를 대조합니다.</p>
+
+      <table class="compare-table">
+        <tr>
+          <th>알고리즘 시그널</th>
+          <th>가중치</th>
+          <th>러너블 최강 카테고리</th>
+          <th>러너블 최약 카테고리</th>
+        </tr>
+        <tr>
+          <td><strong>DM 공유 (Sends)</strong></td>
+          <td>1위</td>
+          <td style="color:#16a34a;">파트너십 (68.2) / 밈 (60.2)</td>
+          <td style="color:#dc2626;">마라톤 뉴스 (22.1) / 러닝 팁 (22.3)</td>
+        </tr>
+        <tr>
+          <td><strong>저장 (Saves)</strong></td>
+          <td>3위</td>
+          <td style="color:#16a34a;">러닝 팁 (39.8) / 파트너십 (34.9)</td>
+          <td style="color:#dc2626;">마라톤 뉴스 (10.4)</td>
+        </tr>
+        <tr>
+          <td><strong>팔로우 전환</strong></td>
+          <td>성장 지표</td>
+          <td style="color:#16a34a;">파트너십 (5.8) / 자사 대회 (5.4)</td>
+          <td style="color:#dc2626;">러닝 팁 (1.2)</td>
+        </tr>
+      </table>
+
+      <div class="key-change" style="margin-top:20px;">
+        <div class="label">Insight</div>
+        <p><strong>파트너십</strong>이 공유 1위 + 저장 2위 + 팔로우 1위 — 모든 알고리즘 시그널에서 최적. 그런데 비중은 <strong>9%</strong>(9건)에 불과</p>
+      </div>
+
+      <h3 style="font-size:15px; margin:24px 0 12px;">공유율 TOP 콘텐츠 패턴 (확산 성공 공식)</h3>
+      <p style="font-size:13px; color:#666; margin-bottom:8px;">공유율(Share/Reach) 상위 콘텐츠에서 발견된 3가지 패턴 — 기존 분석과 일치</p>
+
+      <div style="display:flex; gap:10px; margin:12px 0;">
+        <div style="flex:1; background:#fef3ff; border:1px solid #e8b4fe; border-radius:10px; padding:16px;">
+          <div style="font-size:13px; font-weight:800; color:#833ab4; margin-bottom:6px;">논쟁형 (SR 1.03%)</div>
+          <div style="font-size:12px; color:#555;">"마라톤 ���록 이력서에 쓴다?"<br>공유 476회, 도달 4.6만<br><strong>자기 투영 + 투표 유도</strong></div>
+        </div>
+        <div style="flex:1; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
+          <div style="font-size:13px; font-weight:800; color:#1d4ed8; margin-bottom:6px;">해결사형 (SR 2.71%)</div>
+          <div style="font-size:12px; color:#555;">"울릉도 마라톤 올인원 패키지"<br>공유 411회, 공유율 전체 1위<br><strong>진입장벽 해소 = 의사결정 도구</strong></div>
+        </div>
+        <div style="flex:1; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:16px;">
+          <div style="font-size:13px; font-weight:800; color:#16a34a; margin-bottom:6px;">시의적절형 (SR 1.23%)</div>
+          <div style="font-size:12px; color:#555;">"영하 날씨, 실내 트랙 무료 개방"<br>공유 213회, 팔��우 44명<br><strong>Pain Point 즉각 해소</strong></div>
+        </div>
+      </div>
+
+      <!-- 14. 주제 제안 -->
+      <h2><span class="num">14</span> 알고리즘 최적 주제 리스트 제안</h2>
+      <p style="font-size:13px; color:#666; margin-bottom:12px;">데이터 패턴 + 2026 알고리즘 시그널을 조합한 콘텐츠 제안</p>
+
+      <table class="compare-table">
+        <tr>
+          <th>카테고리</th>
+          <th>포맷</th>
+          <th>주제 예시</th>
+          <th>알고리즘 타겟</th>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>커뮤니티 밈</strong><br><span style="font-size:11px; color:#16a34a;">도달 극대화</span></td>
+          <td>릴스 20~30초</td>
+          <td>"러닝크루 단톡방 유형 5가지" (자기 투영���)</td>
+          <td>DM 공유 + 완주율</td>
+        </tr>
+        <tr>
+          <td>슬라이드</td>
+          <td>"서브3 vs 서브4 러너의 하루 비교" (논쟁형 투표)</td>
+          <td>DM 공유 + 댓글</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>파트너십</strong><br><span style="font-size:11px; color:#16a34a;">공유+팔로우</span></td>
+          <td>릴스 15~30초</td>
+          <td>"러너스 카��� 혜택 30초 요약" (빠른 정보 전달)</td>
+          <td>DM 공유 ("이거 봐")</td>
+        </tr>
+        <tr>
+          <td>슬라이드</td>
+          <td>"여름 러닝 페스티벌 × 브랜드 콜라보 패키지" (해결사형)</td>
+          <td>공유 + 저장 + 팔로우</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>자사 대회</strong><br><span style="font-size:11px; color:#3b82f6;">전환 중심</span></td>
+          <td>릴스 15~20초</td>
+          <td>"레이스팩 언박싱 ASMR" / "코스 시점 미리보기"</td>
+          <td>DM 공유 + 완주율</td>
+        </tr>
+        <tr>
+          <td>캐러셀 (최대 20장)</td>
+          <td>"인사이더런 S 완벽 가이드: 코스/시간/준비물" (해결사형)</td>
+          <td>저장 + 공유</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>러닝 팁</strong><br><span style="font-size:11px; color:#dc2626;">개선 필요</span></td>
+          <td>릴스 20~40초</td>
+          <td>"아직도 무��� 아프게 뛰는 친구 태그" (논쟁화)</td>
+          <td>DM 공유 (태그 유도)</td>
+        </tr>
+        <tr>
+          <td>슬라이드</td>
+          <td>"229러너가 알려주는 시계 세팅" 같은 특정 인물 지정형</td>
+          <td>저장 + 공유 동시</td>
+        </tr>
+        <tr>
+          <td><strong>마라톤 뉴스</strong><br><span style="font-size:11px; color:#f59e0b;">체류시간</span></td>
+          <td>릴스 30~60초</td>
+          <td>"런던 마라톤 SUB-2 도전 프리뷰" (스토리텔링형)</td>
+          <td>시청 지속시간</td>
+        </tr>
+      </table>
+
+      <!-- 15. 주간 운영안 -->
+      <h2><span class="num">15</span> 주간 콘텐츠 믹스 운영안</h2>
+
+      <div class="quote-box">
+        데이터 기반 원칙: 밈(11%) &rarr; 20%로 확대 / 릴스(10%) &rarr; 30%로 확대 / 러닝 팁은 "논쟁화" 필수
+        <div class="attribution">&mdash; 99건 분석 + 2026 알고리즘 기반</div>
+      </div>
+
+      <table class="compare-table">
+        <tr>
+          <th>요일</th>
+          <th>포맷</th>
+          <th>카테고리</th>
+          <th>역할</th>
+        </tr>
+        <tr>
+          <td><strong>월</strong></td>
+          <td>릴스 15~30초</td>
+          <td>커뮤니티 밈 / 논쟁형</td>
+          <td>주초 도달 폭발 &mdash; DM 공유 극대화</td>
+        </tr>
+        <tr>
+          <td><strong>화</strong></td>
+          <td>캐���셀</td>
+          <td>자사 대회 · 세일즈</td>
+          <td>세일즈 전환 &mdash; 해결사형 ��보 전달</td>
+        </tr>
+        <tr>
+          <td><strong>수</strong></td>
+          <td>릴스 20~40초</td>
+          <td>러닝 팁 (논쟁화 버전)</td>
+          <td>교육 + 확산 &mdash; 태그/공유 유도</td>
+        </tr>
+        <tr>
+          <td><strong>목</strong></td>
+          <td>캐러셀</td>
+          <td>파트너십 · 혜택</td>
+          <td>공유+팔로우 &mdash; 숨은 효자 비중 확대</td>
+        </tr>
+        <tr>
+          <td><strong>금</strong></td>
+          <td>릴스 or 슬라이드</td>
+          <td>마라톤 뉴스 / 글로벌</td>
+          <td>체류��간 확보 &mdash; 스토리텔링</td>
+        </tr>
+        <tr>
+          <td><strong>��~일</strong></td>
+          <td>스토리</td>
+          <td>대회 현장 · 비하인드</td>
+          <td>팔로워 관계 유지 &mdash; 리얼 콘텐츠</td>
+        </tr>
+      </table>
+
+      <div class="actions" style="margin-top:24px;">
+        <h3>현재 → 제안 변경 요약</h3>
+        <div class="action-item">
+          <div class="icon" style="background:#dc2626;">!</div>
+          <div>
+            <strong>릴스 비중 10% → 30%</strong>
+            <div class="sub">도달 1.87배 차이. 주 2~3회 릴스 필수 (Mosseri 권장과 일치)</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon" style="background:#dc2626;">!</div>
+          <div>
+            <strong>커뮤니티 밈 11% → 20%</strong>
+            <div class="sub">도달 1위 + 공유 1위인데 비중이 너무 낮음. 논쟁형/자기투영형 주 1회</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon" style="background:#dc2626;">!</div>
+          <div>
+            <strong>파트너십 9% → 15%</strong>
+            <div class="sub">모든 알고리즘 시그널에서 최적인 숨은 효자. 공유율 1.18%로 전체 1위</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon" style="background:#f59e0b;">△</div>
+          <div>
+            <strong>러닝 팁: "논쟁화" 또는 "인물 지정"</strong>
+            <div class="sub">저장만 높고 공유/도달 최하위. "저장해두세요" 대신 공유 명분 설계 필수</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon" style="background:#f59e0b;">△</div>
+          <div>
+            <strong>자사 대회 39% → 30% 적정화</strong>
+            <div class="sub">비중 과다. 줄인 만큼 밈·파트너십에 재배분하면 전체 도달 상승 기대</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PART E ===== -->
+      <div class="part-divider">
+        <span class="part-label">Part E</span>
+        <span class="part-line"></span>
+      </div>
+      <p style="font-size:15px; font-weight:700; margin:8px 0 0;">이미지 템플릿 &amp; 피드 디자인</p>
+      <p style="font-size:13px; color:#888; margin:4px 0 0;">2026 3~4월 트렌드 리뷰 | 러너블 템플릿 논의용</p>
+
+      <!-- 16. 그리드 변화 -->
+      <h2><span class="num">16</span> 그리드가 바뀌었다</h2>
+      <p style="font-size:13px; color:#666; margin-bottom:12px;">2026년 가장 큰 변화: 정사각형 &rarr; <strong>세로형</strong>으로 전환. 기존 1:1 템플릿은 그리드에서 잘림.</p>
+
+      <table class="compare-table">
+        <tr>
+          <th></th>
+          <th>기존</th>
+          <th>2026</th>
+        </tr>
+        <tr>
+          <td><strong>프로필 그리드</strong></td>
+          <td>1:1 정사각형</td>
+          <td><strong>3:4 세로형</strong>으로 전환 중</td>
+        </tr>
+        <tr>
+          <td><strong>피드 권장 비율</strong></td>
+          <td>1:1 (1080&times;1080)</td>
+          <td style="color:#833ab4; font-weight:700;">4:5 (1080&times;1350)</td>
+        </tr>
+        <tr>
+          <td><strong>캐러셀</strong></td>
+          <td>1:1</td>
+          <td>4:5 통일 (슬라이드 간 동일 사이즈)</td>
+        </tr>
+        <tr>
+          <td><strong>핵심 요소 배치</strong></td>
+          <td>전체 영역 사용</td>
+          <td>1080&times;1080 <strong>안전 영역</strong> 내 (그리드 잘림 방지)</td>
+        </tr>
+      </table>
+
+      <div class="key-change" style="margin-top:20px;">
+        <div class="label">Action Required</div>
+        <p>기존 정사각형 템플릿을 그대로 쓰면 그리드에서 위아래 잘림 &mdash; <strong>템플릿 리뉴얼 타이밍</strong></p>
+      </div>
+
+      <!-- 17. 잘나가는 레이아웃 -->
+      <h2><span class="num">17</span> 잘나가는 피드 레이아웃 4가지</h2>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin:16px 0;">
+        <div style="background:#f5f0ff; border:2px solid #d8b4fe; border-radius:12px; padding:18px 22px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:20px;">&#9635;&#9634;&#9635;</span>
+            <strong style="font-size:15px; color:#5b21b6;">A. 체스판 (Checkerboard)</strong>
+          </div>
+          <div style="font-size:13px; color:#555;">
+            사진 &harr; 텍스트/그래픽 교대 배치. 시각적 리듬감 + 콘텐츠 다양성.<br>
+            <span style="color:#888;">사례: @MarytheFairie, @MiinCosmetics</span>
+          </div>
+        </div>
+
+        <div style="background:#eff6ff; border:2px solid #bfdbfe; border-radius:12px; padding:18px 22px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:20px;">&#9646;&#9646;&#9646;</span>
+            <strong style="font-size:15px; color:#1d4ed8;">B. 행(Row) 단위 스토리텔링</strong>
+          </div>
+          <div style="font-size:13px; color:#555;">
+            3개씩 한 행이 하나의 주제/캠페인. 대회 홍보 3연속 포스트로 임팩트.<br>
+            <span style="color:#888;">사례: @Coc&oacute;Constans (인용문 / 레시피 / 운동을 열 단위 분리)</span>
+          </div>
+        </div>
+
+        <div style="background:#f0fdf4; border:2px solid #86efac; border-radius:12px; padding:18px 22px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:20px;">&#9711;</span>
+            <strong style="font-size:15px; color:#16a34a;">C. 미니멀 + 여백</strong>
+          </div>
+          <div style="font-size:13px; color:#555;">
+            과잉 디자인 대신 <strong>여백과 타이포그래피</strong> 중심. "raw, real" 트렌드와 맞물려 과도한 그래픽보다 깔끔한 레이아웃 선호.<br>
+            <span style="color:#888;">브랜드 컬러 2~3색 + 일관된 폰트</span>
+          </div>
+        </div>
+
+        <div style="background:#fff3e0; border:2px solid #fcb045; border-radius:12px; padding:18px 22px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="font-size:20px;">&#8635;</span>
+            <strong style="font-size:15px; color:#e65100;">D. 템플릿 로테이션</strong>
+          </div>
+          <div style="font-size:13px; color:#555;">
+            3~5개 템플릿을 만들어 <strong>교대 사용</strong>. 브랜드 컬러/폰트/로고 위치 통일. 피드 밖(탐색탭)에서도 즉시 브랜드 인식 가능.
+          </div>
+        </div>
+      </div>
+
+      <!-- 18. 벤치마크 -->
+      <h2><span class="num">18</span> 러닝/스포츠 계정 벤치마크</h2>
+
+      <table class="compare-table">
+        <tr>
+          <th>계정</th>
+          <th>팔로워</th>
+          <th>특징</th>
+        </tr>
+        <tr>
+          <td><strong>@nbrc_seoul</strong></td>
+          <td>58K</td>
+          <td>뉴발란스 러닝클럽 &mdash; 톤앤매너 통일, 이벤트별 컬러 테마 전환</td>
+        </tr>
+        <tr>
+          <td><strong>@goodrunner_co</strong></td>
+          <td>37K</td>
+          <td>러닝 전문점 &mdash; 제품/커뮤니티/정보 열 구분 레이아웃</td>
+        </tr>
+        <tr>
+          <td><strong>@seoul_marathon</strong></td>
+          <td>46K</td>
+          <td>대회 공식 &mdash; 시즌별 키비주얼 + 정보형 캐러셀</td>
+        </tr>
+      </table>
+
+      <p style="font-size:13px; color:#666; margin-top:12px;">공통점: <strong>톤앤매너 통일 + 카테고리별 열(Row) 구분 + 시즌/캠페인 컬러 전환</strong></p>
+
+      <!-- 19. 템플릿 제안 -->
+      <h2><span class="num">19</span> 러너블 템플릿 제안 (5종)</h2>
+      <p style="font-size:13px; color:#666; margin-bottom:12px;">Part D 카테고리별 제안과 연결 &mdash; 모든 템플릿 <strong>4:5 통일</strong>이 핵심</p>
+
+      <table class="compare-table">
+        <tr>
+          <th>템플릿</th>
+          <th>용도</th>
+          <th>디자인 방향</th>
+        </tr>
+        <tr>
+          <td><strong>A. 캐러셀 정보형</strong></td>
+          <td>러닝 팁, 대회 가이드, 교육 콘텐츠</td>
+          <td>그리드 + 아이콘 + 숫자 강조. 저장 유도형</td>
+        </tr>
+        <tr>
+          <td><strong>B. 캐러셀 세일즈형</strong></td>
+          <td>대회 모집, 스페셜팩, 런트립 패키지</td>
+          <td>키비주얼 + 혜택 블록 + CTA 강조</td>
+        </tr>
+        <tr>
+          <td><strong>C. 단일 이미지 밈형</strong></td>
+          <td>커뮤니티 밈, 논쟁형, 자기투영</td>
+          <td>큰 타이포 + 투표/질문 포맷. 공유 유도</td>
+        </tr>
+        <tr>
+          <td><strong>D. 뉴스 카드형</strong></td>
+          <td>마라톤 뉴스, 글로벌 트렌드</td>
+          <td>매거진 스타일. 헤드라인 + 서브카피 + 출처</td>
+        </tr>
+        <tr>
+          <td><strong>E. 파트너십 콜라보형</strong></td>
+          <td>제휴 혜택, 브랜드 콜라보</td>
+          <td>더블 로고 + 혜택 아이콘 + 한정 표시</td>
+        </tr>
+      </table>
+
+      <div class="actions" style="margin-top:24px;">
+        <h3>템플릿 제작 체크리스트</h3>
+        <div class="action-item">
+          <div class="icon">1</div>
+          <div>
+            <strong>모든 템플릿 4:5 (1080&times;1350) 통일</strong>
+            <div class="sub">새 그리드 대응 + 알고리즘 세로형 우대. 기존 1:1 템플릿은 단계적 폐기</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">2</div>
+          <div>
+            <strong>안전 영역 1080&times;1080 내 핵심 요소</strong>
+            <div class="sub">로고, 제목, 인물 얼굴 등은 중앙 정사각형 안에 배치. 그리드에서 잘려도 의미 전달</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">3</div>
+          <div>
+            <strong>브랜드 컬러 2~3색 + 폰트 2종 고정</strong>
+            <div class="sub">과도한 색/폰트는 피드 통일감 저해. 시즌 캠페인만 서브 컬러 추가</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">4</div>
+          <div>
+            <strong>캐러셀은 슬라이드 사이즈 &middot; 마진 통일</strong>
+            <div class="sub">스와이프 시 흔들림 방지. 텍스트는 가장자리에서 80px 이상 떨어뜨려 배치</div>
+          </div>
+        </div>
+        <div class="action-item">
+          <div class="icon">5</div>
+          <div>
+            <strong>피드 3&times;3 미리보기로 주간 감사</strong>
+            <div class="sub">Preview / Planoly 등 툴로 발행 전 그리드 시각화. 체스판 또는 행 단위 의도 유지</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; padding:16px 20px; background:#f8f9fa; border-radius:10px; font-size:13.5px; color:#666;">
+        <strong style="color:#1a1a1a;">템플릿 논의 3가지 질문</strong><br><br>
+        1. 현재 3개 계정(@runable.original, @jtbc_seoul_marathon, @runable.store)은 <strong>공통 템플릿 시스템</strong>을 쓸 것인가, 계정별로 분리할 것인가?<br>
+        2. 러닝 팁(24건) &middot; 자사 대회(39건)는 캐러셀 템플릿 A/B로 <strong>양산 체계</strong>를 갖출 수 있는가?<br>
+        3. 커뮤니티 밈은 <strong>단일 이미지 밈형(C)</strong>으로 빠르게 찍어낼 수 있는 워크플로우가 필요한가?
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <span>C&amp;C사업팀 마케팅 레퍼런스 | 2026.04.06</span>
+      <div class="sources">
+        <strong>Sources</strong>
+        <a href="https://sproutsocial.com/insights/instagram-algorithm/">Sprout Social &mdash; How the Instagram Algorithm Works 2026</a>
+        <a href="https://buffer.com/resources/instagram-algorithms/">Buffer &mdash; How the Instagram Algorithm Works 2026</a>
+        <a href="https://blog.hootsuite.com/instagram-algorithm/">Hootsuite &mdash; Instagram Algorithm Tips 2026</a>
+        <a href="https://www.socialinsider.io/social-media-benchmarks/instagram">Social Insider &mdash; 2026 Instagram Organic Engagement Benchmarks</a>
+        <a href="https://www.studiopupcy.com/blog/instagramalgorithm2026/">Studio Pupcy &mdash; 인스타그램 알고리즘 변화 2026 총정리</a>
+        <a href="https://blog.highoutputclub.com/2026-instagram-algorithm-update/">High Output Club &mdash; 2026 인스타그램 알고리즘 업데이트 총정리</a>
+        <a href="https://www.evergreenfeed.com/blog/instagram-reels-algorithm/">EvergreenFeed &mdash; Unlocking The Instagram Reels Algorithm 2026</a>
+        <a href="https://metricool.com/instagram-design/">Metricool &mdash; Instagram Design in 2026</a>
+        <a href="https://skedsocial.com/blog/how-to-make-your-instagram-feed-look-good">Sked Social &mdash; How to Make Your Instagram Feed Look Good 2026</a>
+        <a href="https://giovanniperilli.com/en/blog/instagram-formats-in-2026-a-strategic-content-guide/">Giovanni Perilli &mdash; Instagram Formats 2026 Strategic Guide</a>
+        <a href="https://www.heyorca.com/blog/instagram-media-specs-best-practices-2026">HeyOrca &mdash; Instagram Media Specs 2026</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
