@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>러너블 브랜드 마케터 1차 서류 리뷰 v2</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --accent: #2563eb;
+    --pass: #059669;
+    --fail: #dc2626;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  h2 {
+    font-size: 22px;
+    margin: 48px 0 16px;
+    padding: 12px 0 10px;
+    border-bottom: 3px solid var(--ink);
+  }
+  h2 .version {
+    display: inline-block;
+    font-size: 12px;
+    background: var(--accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 8px;
+    letter-spacing: .04em;
+  }
+  h3 { font-size: 18px; margin: 24px 0 12px; }
+  h4 { font-size: 15px; margin: 14px 0 6px; color: var(--muted); font-weight: 600; }
+  .meta { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .meta span { margin-right: 16px; }
+
+  /* 캘리브레이션 박스 */
+  .calib {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left: 5px solid var(--warn);
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin-bottom: 32px;
+  }
+  .calib h3 { margin-top: 0; color: #92400e; font-size: 17px; }
+  .calib .criteria {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .calib .crit {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .calib .crit strong {
+    display: block;
+    color: #b45309;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  /* 섹션 박스 */
+  .section-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+
+  /* 탈락 vs 통과 테이블 */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .compare-table th, .compare-table td {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    vertical-align: top;
+    text-align: left;
+  }
+  .compare-table th {
+    background: #f3f4f6;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: .03em;
+  }
+  .compare-table .col-pass { background: #ecfdf5; }
+  .compare-table .col-fail { background: #fef2f2; }
+  .compare-table td.axis {
+    background: #f9fafb;
+    font-weight: 600;
+    width: 140px;
+    font-size: 12px;
+  }
+
+  /* 후보 카드 (재평가) */
+  .cand-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .cand-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 13px;
+    position: relative;
+  }
+  .cand-card.top {
+    border: 2px solid var(--pass);
+    background: linear-gradient(180deg, #ecfdf5 0%, white 100%);
+  }
+  .cand-card.joker {
+    border-color: var(--warn);
+  }
+  .cand-card.out {
+    opacity: .55;
+    background: #fafafa;
+  }
+  .cand-card .name {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .cand-card .sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .cand-card .stars {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .cand-card .stars .label { color: var(--muted); }
+  .cand-card .verdict {
+    margin-top: 10px;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .v-pass { background: var(--pass); color: white; }
+  .v-joker { background: var(--warn); color: white; }
+  .v-fail { background: #e5e7eb; color: #6b7280; }
+
+  /* 박가영 하이라이트 박스 */
+  .hero-card {
+    background: linear-gradient(135deg, #d1fae5 0%, #ecfdf5 100%);
+    border: 2px solid var(--pass);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 20px 0;
+  }
+  .hero-card h3 {
+    margin-top: 0;
+    color: #065f46;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-card h3 .badge {
+    background: var(--pass);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .leader-axis {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .axis-item {
+    background: white;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border-left: 3px solid var(--pass);
+  }
+  .axis-item h4 {
+    margin: 0 0 6px;
+    color: #065f46;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .axis-item ul { margin: 0 0 0 16px; padding: 0; font-size: 13px; }
+  .axis-item li { margin: 4px 0; }
+
+  .quote {
+    background: white;
+    border-left: 4px solid var(--pass);
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-style: italic;
+    font-size: 13px;
+    color: #065f46;
+  }
+
+  .warnbox {
+    background: #fef3c7;
+    border-left: 4px solid var(--warn);
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+  .warnbox strong { color: #92400e; }
+
+  /* 최종 명단 */
+  .final-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .final-table th, .final-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+  }
+  .final-table th {
+    background: #1e293b;
+    color: white;
+    font-size: 12px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .final-table tr.new-add {
+    background: #ecfdf5;
+  }
+  .final-table .chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--pass);
+    color: white;
+  }
+  .final-table .chip.opt {
+    background: var(--warn);
+  }
+
+  .star-red { color: var(--fail); }
+  .star-yellow { color: var(--warn); }
+  .star-green { color: var(--pass); }
+  .check { color: var(--pass); font-weight: 700; }
+  .cross { color: var(--fail); font-weight: 700; }
+
+  .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<h1>러너블 브랜드 마케팅 신입/주니어 — 서류 리뷰 <span class="version">v2 · 캘리브레이션 반영</span></h1>
+<div class="meta">
+  <span>📅 2026-04-06 업데이트</span>
+  <span>✅ 4/3 통과 확정: 김소연 · 이승미 · 이호범</span>
+  <span>🔍 4/6 재분석 중</span>
+</div>
+
+<!-- ============ 통과 기준 재정의 ============ -->
+<div class="calib">
+  <h3>🧭 통과 기준 재캘리브레이션</h3>
+  <p style="margin: 4px 0 8px; font-size: 14px;">
+    저연차 <strong>"Good Leader"</strong> = 큰 그림 사고 · 윗사람 의도 파악 후 즉시 실행 · 학습 의지 · 떠먹여주길 기다리지 않는 자기주도
+  </p>
+  <div class="criteria">
+    <div class="crit">
+      <strong>① 포트폴리오 존재</strong>
+      신입이어도 자기 작업물을 정리해본 사람. "시키기 전에 움직이는" 시그널.
+    </div>
+    <div class="crit">
+      <strong>② 자소서가 러너블스러운가</strong>
+      서비스·러닝·사용자 맥락을 한 번이라도 자기 언어로 연결했는가.
+    </div>
+    <div class="crit">
+      <strong>③ 브랜드 마케터 개념 이해</strong>
+      "스포츠 마케터=IP 기획운영"이 아닌 <strong>"이걸 팔 가능성 있는 사람"</strong>. B2C 브랜드·판매 관점.
+    </div>
+    <div class="crit">
+      <strong>④ 연봉 3천대 수용</strong>
+      구조적 업턴 없이 이동 가능한 레벨. 3,500+ 경력자는 이탈 리스크.
+    </div>
+  </div>
+</div>
+
+<!-- ============ 섹션 A: 기존 탈락자 비교 ============ -->
+<h2>A. 기존 탈락자 비교 포인트 <span class="version">WHY</span></h2>
+
+<div class="section-box">
+  <h3>통과자 3명 vs 내가 Top에 올렸던 탈락자</h3>
+  <p style="font-size:13px; color:var(--muted);">
+    왜 점수가 높았던 신진·박유진·김예은이 떨어지고, 중간 점수였던 김소연이 통과했는가 — 새 기준 4축으로 역추적
+  </p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width:130px;">축</th>
+        <th class="col-pass">✅ 김소연 (통과)</th>
+        <th class="col-pass">✅ 이승미 (통과)</th>
+        <th class="col-pass">✅ 이호범 (통과)</th>
+        <th class="col-fail">❌ 신진 (탈락)</th>
+        <th class="col-fail">❌ 박유진 (탈락)</th>
+        <th class="col-fail">❌ 김예은 (탈락)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="axis">① 포트폴리오</td>
+        <td class="col-pass">마케팅 포폴 제출 (부트캠프 실험 기록)</td>
+        <td class="col-pass">마케팅 포폴 제출 (JYP·에이전시 캠페인)</td>
+        <td class="col-pass">PPT 포폴 제출 (광고동아리 수상)</td>
+        <td class="col-fail"><span class="cross">✗</span> 이력서만</td>
+        <td class="col-fail"><span class="cross">✗</span> 이력서만</td>
+        <td class="col-pass">개인 포폴 웹</td>
+      </tr>
+      <tr>
+        <td class="axis">② 러너블스러운 자소서</td>
+        <td class="col-pass"><strong>"러너블 앱 직접 설치, 초보 러너의 막막함"</strong> 명시</td>
+        <td class="col-pass">IP·아티스트 마케팅 본질 언급</td>
+        <td class="col-pass">"소비자 인사이트를 경험으로 연결"</td>
+        <td class="col-fail"><span class="cross">✗</span> 비영리 PR 총괄 일반론</td>
+        <td class="col-fail"><span class="cross">✗</span> "스포츠 마케터" 반복, 브랜드 관점 부재</td>
+        <td class="col-fail"><span class="cross">✗</span> 영화 IP 경력 나열, 러너블 연결 없음</td>
+      </tr>
+      <tr>
+        <td class="axis">③ 브랜드 마케터 개념<br>(이걸 팔 수 있는 사람)</td>
+        <td class="col-pass">부트캠프 CTR 2.5% KPI 달성 → 측정·전환 사고</td>
+        <td class="col-pass">NMIXX 앨범·MD 출시 → <strong>파는 관점</strong></td>
+        <td class="col-pass">두산 베어스 팝업 매출 <strong>7.3억</strong> → 판매 실행</td>
+        <td class="col-fail"><span class="cross">✗</span> PR·언론 노출 중심, 세일즈 시그널 없음</td>
+        <td class="col-fail"><span class="cross">✗</span> "IP 기획운영" 지향 = 기획자 유형</td>
+        <td class="col-pass">캠페인 PM — 판매 사이클 익숙</td>
+      </tr>
+      <tr>
+        <td class="axis">④ 연봉 3천대</td>
+        <td class="col-pass">신입 ✓</td>
+        <td class="col-pass">직전 3,870 (보더라인)</td>
+        <td class="col-pass">희망 3,200~3,400 ✓</td>
+        <td class="col-pass">경력 1y, 추정 3천대</td>
+        <td class="col-pass">신입 ✓</td>
+        <td class="col-fail"><span class="cross">✗</span> <strong>희망 5,000~6,000</strong></td>
+      </tr>
+      <tr style="background:#f9fafb;">
+        <td class="axis"><strong>결정적 탈락 사유</strong></td>
+        <td class="col-pass">-</td>
+        <td class="col-pass">-</td>
+        <td class="col-pass">-</td>
+        <td class="col-fail">러너블 맥락 연결 실패 + PR 중심(파는 사람 아님)</td>
+        <td class="col-fail"><strong>"IP 기획운영 지향 스포츠마케터"</strong> 오인 — 브랜드 마케터 개념 불일치</td>
+        <td class="col-fail"><strong>연봉 5-6천 = 레벨 초과</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 핵심 인사이트 박스 -->
+<div class="section-box" style="background:#fef2f2; border-color:#fca5a5;">
+  <h3 style="color:#991b1b; margin-top:0;">🔑 v1 분석의 오류 자기교정</h3>
+  <ul style="font-size:14px; margin:8px 0 0 18px;">
+    <li><strong>신진 (90점 → 탈락)</strong>: "아디다스 러닝 캠페인 PM"이라는 단어만 보고 JD 1:1 매칭이라 판단했으나, 실제로는 <strong>비영리 기관 PR·언론홍보</strong>가 본질. 러너블이 원하는 "이걸 팔 수 있는 사람"이 아니라 "캠페인 운영자". 자소서에 러너블 맥락도 없음.</li>
+    <li><strong>박유진 (80점 → 탈락)</strong>: 점수 축에서 "러닝/스포츠 경험"에 25점을 몰아줬으나, <strong>자소서 전반의 "스포츠 마케터" 지향 = IP 기획운영 유형</strong>이었다. 러너블은 이 사람들을 이미 가지고 있고, 필요한 건 이걸 파는 사람. 포폴 부재도 리더 시그널 감점.</li>
+    <li><strong>김예은 (71점 → 탈락)</strong>: IP 마케팅 4년차 경력 훌륭하나 <strong>희망 연봉 5-6천</strong>이 단순 "협의" 수준이 아닌 <strong>구조적 미스매치</strong>였음.</li>
+    <li><strong>김소연 (66점 → 통과)</strong>: v1에서 "영양사 배경"이라 B로 깎았으나, 자소서의 <strong>"러너블 앱 직접 설치→초보 러너 관점"</strong> 한 문장이 리더 시그널 #2(윗사람 의도 파악)의 가장 강력한 증거였음.</li>
+  </ul>
+  <p style="font-size:13px; color:#991b1b; margin-top:12px; padding-top:12px; border-top:1px solid #fca5a5;">
+    <strong>교훈</strong>: "실적 키워드 매칭" 방식은 "이 사람이 러너블에서 어떻게 움직일지"를 예측하지 못한다. 리더 시그널 4축 (포폴 / 자소서 러너블 맥락 / 파는 사람 여부 / 연봉 레벨)이 더 정확한 스크리닝 축이다.
+  </p>
+</div>
+
+<!-- ============ 섹션 B: 4/6 신규 리뷰 ============ -->
+<h2>B. 4/6 차수 재분석 <span class="version">NEW</span></h2>
+
+<div class="section-box">
+  <h3>5명 5축 스코어카드</h3>
+  <div class="cand-grid">
+    <!-- 박가영 -->
+    <div class="cand-card top">
+      <div class="name">박가영 <span style="color:var(--pass);">⭐</span></div>
+      <div class="sub">24, 신입, 울산대 건축</div>
+      <div class="stars">
+        <span class="label">리더성</span><span>⭐⭐⭐</span>
+        <span class="label">포폴</span><span>⭐⭐⭐</span>
+        <span class="label">러너블 이해</span><span>⭐⭐⭐</span>
+        <span class="label">판매 DNA</span><span>⭐⭐⭐</span>
+        <span class="label">연봉 핏</span><span><span class="check">✓</span> 신입</span>
+      </div>
+      <div class="verdict v-pass">🟢 1순위 통과</div>
+    </div>
+
+    <!-- 오나윤 -->
+    <div class="cand-card joker">
+      <div class="name">오나윤</div>
+      <div class="sub">25, 신입, 동의대 인간공학</div>
+      <div class="stars">
+        <span class="label">리더성</span><span>⭐⭐</span>
+        <span class="label">포폴</span><span><span class="cross">✗</span></span>
+        <span class="label">러너블 이해</span><span>⭐</span>
+        <span class="label">판매 DNA</span><span>⭐⭐</span>
+        <span class="label">연봉 핏</span><span><span class="check">✓</span> 신입</span>
+      </div>
+      <div class="verdict v-joker">🟡 조커 (선택)</div>
+    </div>
+
+    <!-- 오세현 -->
+    <div class="cand-card out">
+      <div class="name">오세현</div>
+      <div class="sub">28, 경력 3.3y, 샌드박스</div>
+      <div class="stars">
+        <span class="label">리더성</span><span>⭐⭐</span>
+        <span class="label">포폴</span><span>⭐⭐</span>
+        <span class="label">러너블 이해</span><span><span class="cross">✗</span></span>
+        <span class="label">판매 DNA</span><span>⭐⭐</span>
+        <span class="label">연봉 핏</span><span><span class="cross">✗</span> 직전 3,800</span>
+      </div>
+      <div class="verdict v-fail">🔴 탈락 (재평가)</div>
+    </div>
+
+    <!-- 김세희 -->
+    <div class="cand-card out">
+      <div class="name">김세희</div>
+      <div class="sub">29, 경력 9m, 쿠팡 인턴</div>
+      <div class="stars">
+        <span class="label">리더성</span><span><span class="cross">✗</span></span>
+        <span class="label">포폴</span><span><span class="cross">✗</span> 스톡템플릿</span>
+        <span class="label">러너블 이해</span><span><span class="cross">✗</span></span>
+        <span class="label">판매 DNA</span><span><span class="cross">✗</span></span>
+        <span class="label">연봉 핏</span><span>-</span>
+      </div>
+      <div class="verdict v-fail">🔴 탈락</div>
+    </div>
+
+    <!-- 김지우 -->
+    <div class="cand-card out">
+      <div class="name">김지우</div>
+      <div class="sub">28, 방송작가 2.10y</div>
+      <div class="stars">
+        <span class="label">리더성</span><span><span class="cross">✗</span></span>
+        <span class="label">포폴</span><span><span class="cross">✗</span></span>
+        <span class="label">러너블 이해</span><span><span class="cross">✗</span></span>
+        <span class="label">판매 DNA</span><span><span class="cross">✗</span></span>
+        <span class="label">연봉 핏</span><span>-</span>
+      </div>
+      <div class="verdict v-fail">🔴 탈락</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 박가영 히어로 카드 ============ -->
+<div class="hero-card">
+  <h3>
+    🥇 박가영 <span class="badge">확정적 1순위</span>
+    <span style="font-size:12px; color:var(--muted); font-weight:400;">24세 · 신입 · 울산대 건축 5년제 2026.02 졸업</span>
+  </h3>
+
+  <div class="quote">
+    "사람들의 니즈가 궁금해 개인 판매 600%까지 직접 뛰어본 박가영을 소개합니다" — 자소서 타이틀
+  </div>
+
+  <div class="leader-axis">
+    <div class="axis-item">
+      <h4>① 큰 그림 사고</h4>
+      <ul>
+        <li>UAUS 전시 <strong>관람객 8,100명</strong> 기획 총괄 — 기획·디자인·도록 3파트 커뮤니케이션 리딩</li>
+        <li>24개 대학 건축과 딱딱한 이미지 → <strong>"시민 대중 눈높이"</strong>로 리포지셔닝</li>
+        <li>졸업전시위원장 — 교수진·학생·외부 협력사 실무 조정</li>
+      </ul>
+    </div>
+
+    <div class="axis-item">
+      <h4>② 윗사람 의도 파악 → 즉시 실행</h4>
+      <ul>
+        <li>🏆 <strong>"러너블 브랜드 마케팅 신입 지원 포트폴리오"</strong> 제출 — 22명 중 유일</li>
+        <li>JD 읽고 회사 전용으로 커스터마이즈 = 리더 시그널 끝판왕</li>
+        <li>자소서 서사 구조가 기업 자소서 문법에 정확</li>
+      </ul>
+    </div>
+
+    <div class="axis-item">
+      <h4>③ 학습 의지</h4>
+      <ul>
+        <li>부산정보산업인력육성 <strong>AI 브랜드 마케팅 500시간</strong> 수료</li>
+        <li>Gemini·Hailuio·Jenspark AI를 업무에 능동 이식 → 릴스 제작 50% 단축</li>
+        <li>건축 5년제 → 마케팅 직무 피벗 자체가 학습 의지</li>
+      </ul>
+    </div>
+
+    <div class="axis-item">
+      <h4>④ 떠먹여주길 기다리지 않음</h4>
+      <ul>
+        <li>개인 인스타 <strong>@arrr_chihanda 80주+ 자율 운영</strong>, 팔로워 7,300</li>
+        <li>80주간 인게이지먼트 4종 지표 직접 분석 → 가이드라인 표준화</li>
+        <li>렛츠커리어 META A/B 테스트 3가지 가설 본인 수립 → 전환율 <strong>37%</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="color:var(--pass); margin-top:20px;">💰 판매 DNA — 브랜드 마케터 = 파는 사람</h4>
+  <div class="axis-item" style="grid-column: 1/-1; border-left-color: var(--fail);">
+    <ul>
+      <li>🔥 건축 PPT 템플릿 <strong>누적 판매 456건, 목표 대비 400%+</strong></li>
+      <li>인스타 스토리 투표·설문으로 <strong>300명 잠재고객 페인포인트</strong> 파악 → AI 활용 제작 → "이것/칭찬받는" 후킹 멘트 → 매출 전환</li>
+      <li>자소서 첫 줄 <strong>"고객의 지갑을 열게 만드는 팔리는 마케터"</strong> — 정체성 자체가 세일즈 지향</li>
+      <li>"기획 → 가설 → 실행 → 측정 → 판매" 전 사이클을 개인 단위에서 이미 완성</li>
+    </ul>
+  </div>
+
+  <div class="warnbox">
+    <strong>⚠ 면접에서 반드시 확인</strong><br>
+    러닝/운동 도메인 경험 없음(건축 전공). 면접 질문 예시:
+    <ul style="margin: 6px 0 0 18px;">
+      <li>"포폴의 개인 인스타 수익화 방법론을 러너블에 적용하면 첫 3개월에 뭘 하겠나?"</li>
+      <li>"건축 전공에서 마케팅으로 돌아선 진짜 계기가 뭔가?" (진정성 검증)</li>
+      <li>"러너블 앱/서비스 중 개선하고 싶은 포인트 1개를 즉석에서 얘기해달라" (떠먹여주지 않는지 테스트)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 오나윤 조커 -->
+<div class="section-box" style="border-left: 4px solid var(--warn);">
+  <h3>🟡 오나윤 — 조커 카드 (면접 슬롯 여유 시)</h3>
+  <table class="compare-table">
+    <tr>
+      <td class="axis">있는 것</td>
+      <td class="col-pass">
+        ✓ SNS 4채널 직접 구축·운영 (인스타/블로그/홈페이지/카톡) — 현장실습 주어진 게 아닌 "직접 만들어"<br>
+        ✓ 인간공학 UX 전공 + 자소서 "사용자 관찰" 반복<br>
+        ✓ <strong>아이돌 팬 굿즈 직접 제작·판매 하루 100만원</strong> — 판매 DNA 미니어처<br>
+        ✓ 나이키 매장 근무 → 러닝 도메인 접점 (4/6 중 유일)
+      </td>
+    </tr>
+    <tr>
+      <td class="axis">없는 것</td>
+      <td class="col-fail">
+        ✗ <strong>포트폴리오 제출 없음</strong> → 리더 시그널 #1 실패<br>
+        ✗ <strong>자소서에 러너블/러닝 이해 언급 전무</strong> → 박가영과 결정적 차이<br>
+        ⚠ 자소서 비중이 판매직·매장 중심 → 브랜드 마케팅 인지 약함
+      </td>
+    </tr>
+  </table>
+  <p style="font-size:13px; margin-top:12px;">
+    <strong>판정</strong>: 박가영 단독이 1순위. UX 결이 팀에 필요할 때만 면접 1회 추가 가치.
+  </p>
+</div>
+
+<!-- 오세현 재평가 -->
+<div class="section-box" style="border-left: 4px solid var(--fail);">
+  <h3>🔴 오세현 — v1 A- 하향 → 탈락</h3>
+  <p style="font-size:13px; color:var(--muted);">
+    v1에서는 "콘텐츠 IP 풀스택 = 이승미와 유사"로 A-를 줬으나, 새 기준 4축으로 재평가하면 3가지 리스크가 동시에 존재
+  </p>
+  <ol style="font-size:14px; margin:8px 0 0 20px;">
+    <li><strong>연봉 구조적 미스매치</strong> — 직전 연봉 3,800. 3천대 초반 딜하면 구조적 하락 = 이탈 리스크. 이승미(3,870) 통과는 예외 케이스였을 가능성.</li>
+    <li><strong>자소서 톤이 팔로워</strong> — 마지막 단락 "밝고 긍정적인 성격... 최선을 다하겠습니다... 팀 분위기를 살리는 데 기여" = 분위기 메이커 팔로워 색채. 통과 3명 자소서 구조("문제 정의 → 가설 → 실행 → 회고")와 다름.</li>
+    <li><strong>러너블 맥락 전무</strong> — 자소서에 러너블·러닝·서비스 언급 0. "콘텐츠의 본질은 공감과 확산" 같은 일반론. 박가영(전용 포폴) / 김소연(앱 직접 사용) 대비 러너블스러움 부재.</li>
+  </ol>
+  <p style="font-size:13px; margin-top:12px;">
+    <strong>판정</strong>: 이승미가 있으므로 경력+IP 축은 이미 확보됨. 오세현 추가는 라인업 균형에도 불필요.
+  </p>
+</div>
+
+<!-- ============ 최종 면접 명단 ============ -->
+<h2>C. 최종 1차 실무 면접 명단</h2>
+
+<table class="final-table">
+  <thead>
+    <tr>
+      <th style="width:40px;">#</th>
+      <th>이름</th>
+      <th>차수</th>
+      <th>유형</th>
+      <th>결정적 시그널</th>
+      <th>상태</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>김소연</strong></td>
+      <td>4/3</td>
+      <td>신입</td>
+      <td>"러너블 앱 직접 설치, 초보 러너 관점" 자소서 + 부트캠프 CTR 2.5% KPI</td>
+      <td><span class="chip">확정</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>이승미</strong></td>
+      <td>4/3</td>
+      <td>경력 3.8y</td>
+      <td>JYP NMIXX 앨범 마케팅 + 에이전시 IMC 풀스택 (팔 수 있는 경력자)</td>
+      <td><span class="chip">확정</span></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>이호범</strong></td>
+      <td>4/3</td>
+      <td>경력 1.9y</td>
+      <td>두산 베어스 팝업 PM 매출 7.3억 + 광고동아리 카피 수상</td>
+      <td><span class="chip">확정</span></td>
+    </tr>
+    <tr class="new-add">
+      <td>4</td>
+      <td><strong>박가영</strong></td>
+      <td>4/6</td>
+      <td>신입</td>
+      <td><strong>러너블 전용 포폴 (유일)</strong> + 개인 SNS 수익화 456건 + 자기주도 80주</td>
+      <td><span class="chip">NEW 추천</span></td>
+    </tr>
+    <tr style="color:#6b7280;">
+      <td>(5)</td>
+      <td>오나윤</td>
+      <td>4/6</td>
+      <td>신입</td>
+      <td>UX 전공 + SNS 4채널 구축 + 나이키 매장 (UX 결 필요 시)</td>
+      <td><span class="chip opt">선택</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="section-box" style="background:#eff6ff; border-color:#93c5fd; margin-top:16px;">
+  <h3 style="color:#1e40af; margin-top:0;">💡 4인 라인업의 전략적 의미</h3>
+  <p style="font-size:14px; margin:6px 0;">
+    <strong>김소연 + 박가영</strong> (신입 2명) = 서로 다른 각도에서 <strong>"러너블을 이해한다"</strong>는 시그널
+  </p>
+  <ul style="font-size:13px; margin:8px 0 0 18px;">
+    <li><strong>김소연</strong>: 러너블 앱 직접 사용자 관점 (관찰자)</li>
+    <li><strong>박가영</strong>: 러너블 전용 포폴 + 판매 실행자 (실행자)</li>
+    <li><strong>이승미</strong>: 경력 IP·에이전시 풀스택 (파는 경력자)</li>
+    <li><strong>이호범</strong>: 스포츠 IP 팝업 현장 PM (판매 경험자)</li>
+  </ul>
+  <p style="font-size:13px; margin-top:10px; padding-top:10px; border-top:1px solid #93c5fd;">
+    C&C사업팀 브랜드 마케팅 2명 채용에 가장 균형 잡힌 라인업. 관찰자·실행자·경력자·현장가 4각 구도.
+  </p>
+</div>
+
+<div class="footer">
+  📄 상세 카드: <code>00-inbox/recruit-brand-marketer/_review-notes.md</code><br>
+  📊 v1 마크다운: <code>10-projects/recruit-brand-marketer-review.md</code><br>
+  🔄 v2 HTML (현재): <code>10-projects/recruit-brand-marketer-review.html</code>
+</div>
+
+</body>
+</html>
